@@ -1,5 +1,5 @@
 mod app;
-mod reduce;
+mod redux;
 mod storage;
 
 fn main() {
