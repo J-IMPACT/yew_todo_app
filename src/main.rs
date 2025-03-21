@@ -1,7 +1,8 @@
 mod app;
+mod components;
 mod redux;
 mod storage;
 
 fn main() {
-    println!("Hello, world!");
+    yew::Renderer::<app::TodoApp>::new().render();
 }

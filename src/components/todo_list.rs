@@ -1,20 +1,19 @@
 use yew::prelude::*;
-use std::rc::Rc;
 use crate::redux::{Action, State};
 
 pub struct TodoList {
-    state: Option<Rc<State>>,
-    _context_handle: Option<ContextHandle<Rc<State>>>,
+    state: Option<UseReducerHandle<State>>,
+    _context_handle: Option<ContextHandle<UseReducerHandle<State>>>,
 }
 
 impl Component for TodoList {
-    type Message = Rc<State>;
+    type Message = UseReducerHandle<State>;
     type Properties = ();
 
     fn create(ctx: &Context<Self>) -> Self {
         let (state, handle) = ctx
             .link()
-            .context(ctx.link().callback(|state: Rc<State>| state))
+            .context(ctx.link().callback(|state: UseReducerHandle<State>| state))
             .expect("No context found");
 
         Self {
@@ -32,9 +31,31 @@ impl Component for TodoList {
         if let Some(state) = &self.state {
             html! {
                 <ul>
-                    { for state.tasks.iter().map(|task| html! { <li>{ &task.text }</li> }) }
+                {
+                    for state.tasks.iter().map(|task| {
+                        let task_id = task.id;
+                        let toggle_callback = {
+                            let state = state.clone();
+                            Callback::from(move |_| state.dispatch(Action::Toggle(task_id)))
+                        };
+                        let remove_callback = {
+                            let state = state.clone();
+                            Callback::from(move |_| state.dispatch(Action::Remove(task_id)))
+                        };
+
+                        html! {
+                            <li>
+                                <span style={ if task.completed { "text-decoration: line-through;" } else { "" } }>
+                                    { &task.text }
+                                </span>
+                                <button onclick={toggle_callback}>{ if task.completed { "Restart" } else { "Finish" } }</button>
+                                <button onclick={remove_callback}>{ "Remove" }</button>
+                            </li> }})
+                }
                 </ul>
             }
-        } else { html! {} }
+        } else {
+            html! { <p>{ "Loading..." }</p> }
+        }
     }
 }

@@ -20,8 +20,7 @@ pub struct State {
 pub enum Action {
     Add(String),
     Toggle(usize),
-    Remove(usize),
-    Load(Vec<Task>)
+    Remove(usize)
 }
 
 impl Reducible for State {
@@ -42,9 +41,6 @@ impl Reducible for State {
             }
             Action::Remove(id) => {
                 new_state.tasks.retain(|task| task.id != id);
-            }
-            Action::Load(tasks) => {
-                new_state.tasks = tasks;
             }
         }
 

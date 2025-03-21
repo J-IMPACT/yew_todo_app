@@ -2,7 +2,7 @@ use yew::prelude::*;
 use crate::redux::{Action, State};
 
 #[function_component(TodoInput)]
-fn todo_input() -> Html {
+pub fn todo_input() -> Html {
     let state = use_context::<UseReducerHandle<State>>().expect("No context found");
     
     let input_ref = use_node_ref();
